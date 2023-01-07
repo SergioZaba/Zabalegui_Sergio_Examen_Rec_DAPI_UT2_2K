@@ -3,8 +3,5 @@ def check_username(nom):
 
     return nom.title()
 
-
-
-
 nom= input("Introduzca su nombre y apellidos")
 print(check_username(nom))
