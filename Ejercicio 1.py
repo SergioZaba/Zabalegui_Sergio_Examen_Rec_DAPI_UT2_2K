@@ -1,3 +1,6 @@
+import csv
+
+
 nif_dict = {"0": "T", "1": "R", "2": "W", "3": "A", "4": "G", "5": "M", "6": "Y", "7": "F", "8": "P",
                             "9": "D",
                             "10": "X", "11": "B", "12": "N", "13": "J", "14": "Z", "15": "S", "16": "Q", "17": "V",
@@ -27,28 +30,46 @@ def check_phone(num):
     pais = countries_dict[separar[0]]
     telefono = "+" + separar[0] + "-" + separar[1].replace("-", "")
 
-    return print(pais, telefono)
+    return telefono, pais
 def calculate_bill(multas_radar, multas_ITV, multas_estupefacientes):
     bill = multas_radar + multas_ITV + multas_estupefacientes
-    return print(bill)
+    return bill
 
 
-def check_DGT(nombre, apellidos):
-    import csv
-    with open("Excel-DGT.csv") as f:
-        reader = csv.reader(f)
-        for row in reader:
-            if nombre and apellidos in row:
-                name = row[0] + " " + row[1]
-                print(check_username(name))
-                dni = row[2]
-                print(check_nif(dni))
-                check_phone(row[3])
-                veiculo = row[4]
-                print(veiculo)
-                calculate_bill(int(row[5]),int(row[6]),int(row[7]))
+def check_DGT():
+    """Esta funcion recoje un excel """
+
+    with open("Sergio Zabalegui Nicuesa - DGT.csv", encoding="utf-8") as csvfile:
+        reader = csv.reader(csvfile)
 
 
-nombre = input("Introduce el nombre\n")
-apellidos = input("Introduce los apellidos\n")
-check_DGT(nombre, apellidos)
+        csv_out = [["Nombre", "Apellidos", "DNI", "Teléfono", "País", "Vehículo", "Total Multas"]]
+
+        for persona in reader:
+            if persona[0] != "Nombre":
+
+                name = persona[0]
+                apellido = persona[1]
+                dni = persona[2]
+                Telefono, Pais = check_phone(persona[3])
+                veiculo = persona[4]
+
+                calculate_bill(int(persona[5]), int(persona[6]), int(persona[7]))
+
+                csv_out.append([check_username(name), check_username(apellido), check_nif(dni), Telefono, Pais, veiculo, calculate_bill(int(persona[5]), int(persona[6]), int(persona[7]))])
+
+        excel_escritor = csv.writer(csvfile)
+
+    with open("Sergio Zabalegui Nicuesa - DGT.csv", encoding="utf-8") as salida:
+        csvsalida = open('salida.csv', 'w', newline='')
+        salida = csv.writer(csvsalida,
+                            quotechar='"',
+                            quoting=csv.QUOTE_ALL)
+        for linea in csv_out:
+            salida.writerow(linea)
+    return
+
+
+
+check_DGT()
+
